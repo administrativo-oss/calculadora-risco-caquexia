@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco para Caquexia em HNSCC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .header a {
+            color: #008080;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+            accent-color: #008080;
+        }
+
+        .radio-option label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-group input[type="number"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #008080;
+            box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
+        }
+
+        .input-unit {
+            color: #666;
+            font-size: 14px;
+            min-width: 30px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .calculate-button {
+            background-color: #008080;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .calculate-button:hover {
+            background-color: #006666;
+        }
+
+        .calculate-button:active {
+            transform: scale(0.98);
+        }
+
+        .results-section {
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .probability-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #008080;
+            text-align: center;
+            padding: 15px;
+            background-color: #f0f8f8;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .risk-classification {
+            text-align: center;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .risk-high {
+            background-color: #f2dede;
+            color: #d9534f;
+            border: 1px solid #ebcccc;
+        }
+
+        .risk-low {
+            background-color: #dff0d8;
+            color: #5cb85c;
+            border: 1px solid #d6e9c6;
+        }
+
+        .recommendation {
+            background-color: #f9f9f9;
+            border-left: 4px solid #008080;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .input-unit {
+                position: absolute;
+                right: 10px;
+            }
+
+            .input-group {
+                position: relative;
+            }
+
+            .probability-value {
+                font-size: 24px;
+            }
+
+            .risk-classification {
+                font-size: 16px;
+            }
+        }
+
+        .error-message {
+            color: #d9534f;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Calculadora de Risco para Caquexia em Câncer de Cabeça e Pescoço (HNSCC)</h1>
+            <p>Ferramenta baseada no modelo preditivo desenvolvido por <a href="#" target="_blank"> Pereira et al.2025</a></p>
+            <p>Esta ferramenta calcula a probabilidade de caquexia em pacientes com carcinoma de células escamosas de cabeça e pescoço recém-diagnosticados, antes do início do tratamento oncológico.</p>
+        </div>
+
+        <form id="riskForm">
+            <!-- Gênero -->
+            <div class="form-group">
+                <label>Gênero</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="gender_female" name="gender" value="0" required>
+                        <label for="gender_female">Feminino</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="gender_male" name="gender" value="1" required>
+                        <label for="gender_male">Masculino</label>
+                    </div>
+                </div>
+                <div class="error-message" id="error_gender">Por favor, selecione um gênero</div>
+            </div>
+
+            <!-- Risco de Disfagia -->
+            <div class="form-group">
+                <label>Risco de Disfagia Orofaríngea (EAT-10 ≥ 3)</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="od_no" name="od" value="0" required>
+                        <label for="od_no">Não</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="od_yes" name="od" value="1" required>
+                        <label for="od_yes">Sim</label>
+                    </div>
+                </div>
+                <div class="error-message" id="error_od">Por favor, selecione uma opção</div>
+            </div>
+
+            <!-- Circunferência Muscular do Braço -->
+            <div class="form-group">
+                <label for="muamc">Circunferência Muscular do Braço (MUAMC)</label>
+                <div class="input-group">
+                    <input type="number" id="muamc" name="muamc" placeholder="Ex: 25.5" step="0.1" required>
+                    <span class="input-unit">cm</span>
+                </div>
+                <div class="error-message" id="error_muamc">Por favor, insira um valor válido</div>
+            </div>
+
+            <!-- Circunferência da Panturrilha -->
+            <div class="form-group">
+                <label for="cc">Circunferência da Panturrilha (CC)</label>
+                <div class="input-group">
+                    <input type="number" id="cc" name="cc" placeholder="Ex: 32.0" step="0.1" required>
+                    <span class="input-unit">cm</span>
+                </div>
+                <div class="error-message" id="error_cc">Por favor, insira um valor válido</div>
+            </div>
+
+            <!-- Relação Albumina/Globulina -->
+            <div class="form-group">
+                <label for="agr">Relação Albumina/Globulina (AGR)</label>
+                <div class="input-group">
+                    <input type="number" id="agr" name="agr" placeholder="Ex: 1.2" step="0.01" required>
+                </div>
+                <div class="error-message" id="error_agr">Por favor, insira um valor válido</div>
+            </div>
+
+            <div class="button-container">
+                <button type="button" class="calculate-button" onclick="calculateRisk()">Calcular Risco</button>
+            </div>
+        </form>
+
+        <!-- Seção de Resultados -->
+        <div class="results-section" id="resultsSection">
+            <div class="result-item">
+                <div class="result-label">Probabilidade de Caquexia</div>
+                <div class="probability-value" id="probabilityValue">--%</div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">Classificação de Risco</div>
+                <div class="risk-classification" id="riskClassification"></div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">Recomendação Clínica</div>
+                <div class="recommendation" id="recommendation"></div>
+            </div>
+        </div>
+
+        <!-- Rodapé -->
+        <div class="footer">
+            <p><strong>Disclaimer:</strong> Esta calculadora é uma ferramenta de auxílio à decisão clínica e não substitui o julgamento profissional. O modelo foi validado internamente.</p>
+            <p>Citação completa do artigo será adicionada quando publicado.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculateRisk() {
+            // Limpar mensagens de erro
+            clearErrors();
+
+            // Obter valores dos inputs
+            const gender = document.querySelector('input[name="gender"]:checked');
+            const od = document.querySelector('input[name="od"]:checked');
+            const muamcInput = document.getElementById('muamc');
+            const ccInput = document.getElementById('cc');
+            const agrInput = document.getElementById('agr');
+
+            // Validar campos
+            let isValid = true;
+
+            if (!gender) {
+                showError('error_gender');
+                isValid = false;
+            }
+
+            if (!od) {
+                showError('error_od');
+                isValid = false;
+            }
+
+            if (!muamcInput.value || isNaN(muamcInput.value) || muamcInput.value <= 0) {
+                showError('error_muamc');
+                isValid = false;
+            }
+
+            if (!ccInput.value || isNaN(ccInput.value) || ccInput.value <= 0) {
+                showError('error_cc');
+                isValid = false;
+            }
+
+            if (!agrInput.value || isNaN(agrInput.value) || agrInput.value <= 0) {
+                showError('error_agr');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            // Converter valores para números
+            const genderValue = parseFloat(gender.value);
+            const odValue = parseFloat(od.value);
+            const muamcValue = parseFloat(muamcInput.value);
+            const ccValue = parseFloat(ccInput.value);
+            const agrValue = parseFloat(agrInput.value);
+
+            // Calcular Logit
+            const logit = 13.633 + (2.538 * genderValue) + (1.093 * odValue) - (0.308 * muamcValue) - (0.220 * ccValue) - (0.635 * agrValue);
+
+            // Calcular Probabilidade usando a função logística
+            const probability = 1 / (1 + Math.exp(-logit));
+
+            // Converter para porcentagem
+            const percentageProbability = probability * 100;
+
+            // Atualizar resultados
+            updateResults(percentageProbability);
+
+            // Mostrar seção de resultados
+            document.getElementById('resultsSection').classList.add('show');
+        }
+
+        function updateResults(probability) {
+            // Exibir probabilidade com uma casa decimal
+            document.getElementById('probabilityValue').textContent = probability.toFixed(1) + '%';
+
+            // Determinar classificação de risco
+            const riskClassificationDiv = document.getElementById('riskClassification');
+            const recommendationDiv = document.getElementById('recommendation');
+
+            if (probability >= 60) {
+                // ALTO RISCO
+                riskClassificationDiv.textContent = 'ALTO RISCO';
+                riskClassificationDiv.className = 'risk-classification risk-high';
+                recommendationDiv.textContent = 'Recomenda-se avaliação nutricional completa e início de uma abordagem multidisciplinar de cuidados de suporte.';
+            } else {
+                // BAIXO RISCO
+                riskClassificationDiv.textContent = 'BAIXO RISCO';
+                riskClassificationDiv.className = 'risk-classification risk-low';
+                recommendationDiv.textContent = 'Recomenda-se monitoramento nutricional contínuo conforme as diretrizes clínicas.';
+            }
+        }
+
+        function showError(elementId) {
+            document.getElementById(elementId).classList.add('show');
+        }
+
+        function clearErrors() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach((error) => {
+                error.classList.remove('show');
+            });
+        }
+
+        // Permitir cálculo ao pressionar Enter
+        document.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const riskForm = document.getElementById('riskForm');
+                if (riskForm.contains(event.target)) {
+                    calculateRisk();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
